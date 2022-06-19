@@ -6,11 +6,13 @@
 
 #IncludeRegexTransform: 
 
-/home/student/Desktop/os4_hw4/malloc_2.cpp
+/home/student/Desktop/OS_HW4/malloc_3.cpp
 unistd.h
 -
+cstring
+-
 
-/home/student/Desktop/os4_hw4/test.cpp
+/home/student/Desktop/OS_HW4/test.cpp
 unistd.h
 -
 stdio.h

@@ -4,14 +4,14 @@
 
 
 # Configuration directories and files
-SourceDirectory: /home/student/Desktop/os4_hw4
-BuildDirectory: /home/student/Desktop/os4_hw4/build
+SourceDirectory: /home/student/Desktop/OS_HW4
+BuildDirectory: /home/student/Desktop/OS_HW4/build
 
 # Where to place the cost data store
 CostDataFile: 
 
 # Site is something like machine.domain, i.e. pragmatic.crd
-Site: ubuntu18
+Site: pc
 
 # Build name is osname-revision-compiler, i.e. Linux-2.4.2-2smp-c++
 BuildName: Linux-g++
@@ -36,7 +36,7 @@ ScpCommand: /usr/bin/scp
 NightlyStartTime: 00:00:00 EDT
 
 # Commands for the build/test/submit cycle
-ConfigureCommand: "/usr/bin/cmake" "/home/student/Desktop/os4_hw4"
+ConfigureCommand: "/usr/bin/cmake" "/home/student/Desktop/OS_HW4"
 MakeCommand: /usr/bin/cmake --build . --config "${CTEST_CONFIGURATION_TYPE}" -- -i
 DefaultCTestConfigurationType: Release
 

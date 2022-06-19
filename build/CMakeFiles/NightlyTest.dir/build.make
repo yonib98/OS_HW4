@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/student/Desktop/os4_hw4
+CMAKE_SOURCE_DIR = /home/student/Desktop/OS_HW4
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/student/Desktop/os4_hw4/build
+CMAKE_BINARY_DIR = /home/student/Desktop/OS_HW4/build
 
 # Utility rule file for NightlyTest.
 
@@ -71,6 +71,6 @@ CMakeFiles/NightlyTest.dir/clean:
 .PHONY : CMakeFiles/NightlyTest.dir/clean
 
 CMakeFiles/NightlyTest.dir/depend:
-	cd /home/student/Desktop/os4_hw4/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/student/Desktop/os4_hw4 /home/student/Desktop/os4_hw4 /home/student/Desktop/os4_hw4/build /home/student/Desktop/os4_hw4/build /home/student/Desktop/os4_hw4/build/CMakeFiles/NightlyTest.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/student/Desktop/OS_HW4/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/student/Desktop/OS_HW4 /home/student/Desktop/OS_HW4 /home/student/Desktop/OS_HW4/build /home/student/Desktop/OS_HW4/build /home/student/Desktop/OS_HW4/build/CMakeFiles/NightlyTest.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/NightlyTest.dir/depend
 

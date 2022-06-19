@@ -1,12 +1,12 @@
 [
 {
-  "directory": "/home/student/Desktop/os4_hw4/build",
-  "command": "/usr/bin/g++    -g   -o CMakeFiles/os_hw4.dir/malloc_2.cpp.o -c /home/student/Desktop/os4_hw4/malloc_2.cpp",
-  "file": "/home/student/Desktop/os4_hw4/malloc_2.cpp"
+  "directory": "/home/student/Desktop/OS_HW4/build",
+  "command": "/usr/bin/g++    -g   -std=gnu++11 -o CMakeFiles/os_hw4.dir/malloc_3.cpp.o -c /home/student/Desktop/OS_HW4/malloc_3.cpp",
+  "file": "/home/student/Desktop/OS_HW4/malloc_3.cpp"
 },
 {
-  "directory": "/home/student/Desktop/os4_hw4/build",
-  "command": "/usr/bin/g++    -g   -o CMakeFiles/os_hw4.dir/test.cpp.o -c /home/student/Desktop/os4_hw4/test.cpp",
-  "file": "/home/student/Desktop/os4_hw4/test.cpp"
+  "directory": "/home/student/Desktop/OS_HW4/build",
+  "command": "/usr/bin/g++    -g   -std=gnu++11 -o CMakeFiles/os_hw4.dir/test.cpp.o -c /home/student/Desktop/OS_HW4/test.cpp",
+  "file": "/home/student/Desktop/OS_HW4/test.cpp"
 }
 ]

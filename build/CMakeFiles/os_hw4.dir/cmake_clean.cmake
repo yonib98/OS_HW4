@@ -1,5 +1,5 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/os_hw4.dir/malloc_2.cpp.o"
+  "CMakeFiles/os_hw4.dir/malloc_3.cpp.o"
   "CMakeFiles/os_hw4.dir/test.cpp.o"
   "os_hw4.pdb"
   "os_hw4"

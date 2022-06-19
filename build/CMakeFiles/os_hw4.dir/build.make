@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/student/Desktop/os4_hw4
+CMAKE_SOURCE_DIR = /home/student/Desktop/OS_HW4
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/student/Desktop/os4_hw4/build
+CMAKE_BINARY_DIR = /home/student/Desktop/OS_HW4/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/os_hw4.dir/depend.make
@@ -57,42 +57,42 @@ include CMakeFiles/os_hw4.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/os_hw4.dir/flags.make
 
-CMakeFiles/os_hw4.dir/malloc_2.cpp.o: CMakeFiles/os_hw4.dir/flags.make
-CMakeFiles/os_hw4.dir/malloc_2.cpp.o: ../malloc_2.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/student/Desktop/os4_hw4/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/os_hw4.dir/malloc_2.cpp.o"
-	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/os_hw4.dir/malloc_2.cpp.o -c /home/student/Desktop/os4_hw4/malloc_2.cpp
+CMakeFiles/os_hw4.dir/malloc_3.cpp.o: CMakeFiles/os_hw4.dir/flags.make
+CMakeFiles/os_hw4.dir/malloc_3.cpp.o: ../malloc_3.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/student/Desktop/OS_HW4/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/os_hw4.dir/malloc_3.cpp.o"
+	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/os_hw4.dir/malloc_3.cpp.o -c /home/student/Desktop/OS_HW4/malloc_3.cpp
 
-CMakeFiles/os_hw4.dir/malloc_2.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/os_hw4.dir/malloc_2.cpp.i"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/student/Desktop/os4_hw4/malloc_2.cpp > CMakeFiles/os_hw4.dir/malloc_2.cpp.i
+CMakeFiles/os_hw4.dir/malloc_3.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/os_hw4.dir/malloc_3.cpp.i"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/student/Desktop/OS_HW4/malloc_3.cpp > CMakeFiles/os_hw4.dir/malloc_3.cpp.i
 
-CMakeFiles/os_hw4.dir/malloc_2.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/os_hw4.dir/malloc_2.cpp.s"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/student/Desktop/os4_hw4/malloc_2.cpp -o CMakeFiles/os_hw4.dir/malloc_2.cpp.s
+CMakeFiles/os_hw4.dir/malloc_3.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/os_hw4.dir/malloc_3.cpp.s"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/student/Desktop/OS_HW4/malloc_3.cpp -o CMakeFiles/os_hw4.dir/malloc_3.cpp.s
 
-CMakeFiles/os_hw4.dir/malloc_2.cpp.o.requires:
+CMakeFiles/os_hw4.dir/malloc_3.cpp.o.requires:
 
-.PHONY : CMakeFiles/os_hw4.dir/malloc_2.cpp.o.requires
+.PHONY : CMakeFiles/os_hw4.dir/malloc_3.cpp.o.requires
 
-CMakeFiles/os_hw4.dir/malloc_2.cpp.o.provides: CMakeFiles/os_hw4.dir/malloc_2.cpp.o.requires
-	$(MAKE) -f CMakeFiles/os_hw4.dir/build.make CMakeFiles/os_hw4.dir/malloc_2.cpp.o.provides.build
-.PHONY : CMakeFiles/os_hw4.dir/malloc_2.cpp.o.provides
+CMakeFiles/os_hw4.dir/malloc_3.cpp.o.provides: CMakeFiles/os_hw4.dir/malloc_3.cpp.o.requires
+	$(MAKE) -f CMakeFiles/os_hw4.dir/build.make CMakeFiles/os_hw4.dir/malloc_3.cpp.o.provides.build
+.PHONY : CMakeFiles/os_hw4.dir/malloc_3.cpp.o.provides
 
-CMakeFiles/os_hw4.dir/malloc_2.cpp.o.provides.build: CMakeFiles/os_hw4.dir/malloc_2.cpp.o
+CMakeFiles/os_hw4.dir/malloc_3.cpp.o.provides.build: CMakeFiles/os_hw4.dir/malloc_3.cpp.o
 
 
 CMakeFiles/os_hw4.dir/test.cpp.o: CMakeFiles/os_hw4.dir/flags.make
 CMakeFiles/os_hw4.dir/test.cpp.o: ../test.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/student/Desktop/os4_hw4/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/os_hw4.dir/test.cpp.o"
-	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/os_hw4.dir/test.cpp.o -c /home/student/Desktop/os4_hw4/test.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/student/Desktop/OS_HW4/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/os_hw4.dir/test.cpp.o"
+	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/os_hw4.dir/test.cpp.o -c /home/student/Desktop/OS_HW4/test.cpp
 
 CMakeFiles/os_hw4.dir/test.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/os_hw4.dir/test.cpp.i"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/student/Desktop/os4_hw4/test.cpp > CMakeFiles/os_hw4.dir/test.cpp.i
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/student/Desktop/OS_HW4/test.cpp > CMakeFiles/os_hw4.dir/test.cpp.i
 
 CMakeFiles/os_hw4.dir/test.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/os_hw4.dir/test.cpp.s"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/student/Desktop/os4_hw4/test.cpp -o CMakeFiles/os_hw4.dir/test.cpp.s
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/student/Desktop/OS_HW4/test.cpp -o CMakeFiles/os_hw4.dir/test.cpp.s
 
 CMakeFiles/os_hw4.dir/test.cpp.o.requires:
 
@@ -107,17 +107,17 @@ CMakeFiles/os_hw4.dir/test.cpp.o.provides.build: CMakeFiles/os_hw4.dir/test.cpp.
 
 # Object files for target os_hw4
 os_hw4_OBJECTS = \
-"CMakeFiles/os_hw4.dir/malloc_2.cpp.o" \
+"CMakeFiles/os_hw4.dir/malloc_3.cpp.o" \
 "CMakeFiles/os_hw4.dir/test.cpp.o"
 
 # External object files for target os_hw4
 os_hw4_EXTERNAL_OBJECTS =
 
-os_hw4: CMakeFiles/os_hw4.dir/malloc_2.cpp.o
+os_hw4: CMakeFiles/os_hw4.dir/malloc_3.cpp.o
 os_hw4: CMakeFiles/os_hw4.dir/test.cpp.o
 os_hw4: CMakeFiles/os_hw4.dir/build.make
 os_hw4: CMakeFiles/os_hw4.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/student/Desktop/os4_hw4/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable os_hw4"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/student/Desktop/OS_HW4/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable os_hw4"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/os_hw4.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -125,7 +125,7 @@ CMakeFiles/os_hw4.dir/build: os_hw4
 
 .PHONY : CMakeFiles/os_hw4.dir/build
 
-CMakeFiles/os_hw4.dir/requires: CMakeFiles/os_hw4.dir/malloc_2.cpp.o.requires
+CMakeFiles/os_hw4.dir/requires: CMakeFiles/os_hw4.dir/malloc_3.cpp.o.requires
 CMakeFiles/os_hw4.dir/requires: CMakeFiles/os_hw4.dir/test.cpp.o.requires
 
 .PHONY : CMakeFiles/os_hw4.dir/requires
@@ -135,6 +135,6 @@ CMakeFiles/os_hw4.dir/clean:
 .PHONY : CMakeFiles/os_hw4.dir/clean
 
 CMakeFiles/os_hw4.dir/depend:
-	cd /home/student/Desktop/os4_hw4/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/student/Desktop/os4_hw4 /home/student/Desktop/os4_hw4 /home/student/Desktop/os4_hw4/build /home/student/Desktop/os4_hw4/build /home/student/Desktop/os4_hw4/build/CMakeFiles/os_hw4.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/student/Desktop/OS_HW4/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/student/Desktop/OS_HW4 /home/student/Desktop/OS_HW4 /home/student/Desktop/OS_HW4/build /home/student/Desktop/OS_HW4/build /home/student/Desktop/OS_HW4/build/CMakeFiles/os_hw4.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/os_hw4.dir/depend
 

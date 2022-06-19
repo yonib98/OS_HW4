@@ -13,7 +13,7 @@ int main(){
     arr2[0]=6;
     arr2[1]=7;
 
-    int* arr3 = (int*)smalloc(12);
+    int* arr3 = (int*)smalloc(8);
     sfree(arr2);
     sfree(arr3);
     return 0;

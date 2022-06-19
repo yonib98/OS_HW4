@@ -4,8 +4,8 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/student/Desktop/os4_hw4/malloc_2.cpp" "/home/student/Desktop/os4_hw4/build/CMakeFiles/os_hw4.dir/malloc_2.cpp.o"
-  "/home/student/Desktop/os4_hw4/test.cpp" "/home/student/Desktop/os4_hw4/build/CMakeFiles/os_hw4.dir/test.cpp.o"
+  "/home/student/Desktop/OS_HW4/malloc_3.cpp" "/home/student/Desktop/OS_HW4/build/CMakeFiles/os_hw4.dir/malloc_3.cpp.o"
+  "/home/student/Desktop/OS_HW4/test.cpp" "/home/student/Desktop/OS_HW4/build/CMakeFiles/os_hw4.dir/test.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

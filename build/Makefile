@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/student/Desktop/os4_hw4
+CMAKE_SOURCE_DIR = /home/student/Desktop/OS_HW4
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/student/Desktop/os4_hw4/build
+CMAKE_BINARY_DIR = /home/student/Desktop/OS_HW4/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -92,7 +92,7 @@ package/fast: package
 # Special rule for the target package_source
 package_source:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Run CPack packaging tool for source..."
-	/usr/bin/cpack --config ./CPackSourceConfig.cmake /home/student/Desktop/os4_hw4/build/CPackSourceConfig.cmake
+	/usr/bin/cpack --config ./CPackSourceConfig.cmake /home/student/Desktop/OS_HW4/build/CPackSourceConfig.cmake
 .PHONY : package_source
 
 # Special rule for the target package_source
@@ -113,9 +113,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/student/Desktop/os4_hw4/build/CMakeFiles /home/student/Desktop/os4_hw4/build/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/student/Desktop/OS_HW4/build/CMakeFiles /home/student/Desktop/OS_HW4/build/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/student/Desktop/os4_hw4/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/student/Desktop/OS_HW4/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -520,32 +520,32 @@ ExperimentalBuild/fast:
 	$(MAKE) -f CMakeFiles/ExperimentalBuild.dir/build.make CMakeFiles/ExperimentalBuild.dir/build
 .PHONY : ExperimentalBuild/fast
 
-malloc_2.o: malloc_2.cpp.o
+malloc_3.o: malloc_3.cpp.o
 
-.PHONY : malloc_2.o
+.PHONY : malloc_3.o
 
 # target to build an object file
-malloc_2.cpp.o:
-	$(MAKE) -f CMakeFiles/os_hw4.dir/build.make CMakeFiles/os_hw4.dir/malloc_2.cpp.o
-.PHONY : malloc_2.cpp.o
+malloc_3.cpp.o:
+	$(MAKE) -f CMakeFiles/os_hw4.dir/build.make CMakeFiles/os_hw4.dir/malloc_3.cpp.o
+.PHONY : malloc_3.cpp.o
 
-malloc_2.i: malloc_2.cpp.i
+malloc_3.i: malloc_3.cpp.i
 
-.PHONY : malloc_2.i
+.PHONY : malloc_3.i
 
 # target to preprocess a source file
-malloc_2.cpp.i:
-	$(MAKE) -f CMakeFiles/os_hw4.dir/build.make CMakeFiles/os_hw4.dir/malloc_2.cpp.i
-.PHONY : malloc_2.cpp.i
+malloc_3.cpp.i:
+	$(MAKE) -f CMakeFiles/os_hw4.dir/build.make CMakeFiles/os_hw4.dir/malloc_3.cpp.i
+.PHONY : malloc_3.cpp.i
 
-malloc_2.s: malloc_2.cpp.s
+malloc_3.s: malloc_3.cpp.s
 
-.PHONY : malloc_2.s
+.PHONY : malloc_3.s
 
 # target to generate assembly for a file
-malloc_2.cpp.s:
-	$(MAKE) -f CMakeFiles/os_hw4.dir/build.make CMakeFiles/os_hw4.dir/malloc_2.cpp.s
-.PHONY : malloc_2.cpp.s
+malloc_3.cpp.s:
+	$(MAKE) -f CMakeFiles/os_hw4.dir/build.make CMakeFiles/os_hw4.dir/malloc_3.cpp.s
+.PHONY : malloc_3.cpp.s
 
 test.o: test.cpp.o
 
@@ -614,9 +614,9 @@ help:
 	@echo "... ContinuousTest"
 	@echo "... ContinuousUpdate"
 	@echo "... ExperimentalBuild"
-	@echo "... malloc_2.o"
-	@echo "... malloc_2.i"
-	@echo "... malloc_2.s"
+	@echo "... malloc_3.o"
+	@echo "... malloc_3.i"
+	@echo "... malloc_3.s"
 	@echo "... test.o"
 	@echo "... test.i"
 	@echo "... test.s"
