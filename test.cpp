@@ -7,15 +7,16 @@ int main(){
     arr[0]=5;
     arr[1]=4;
     printf("arr: %d, %d\n",arr[0],arr[1]);
-    sfree(arr);
+    //sfree(arr);
 
     int* arr2 = (int*)smalloc(8);
     arr2[0]=6;
     arr2[1]=7;
 
     int* arr3 = (int*)smalloc(8);
-    sfree(arr2);
+    sfree(arr);
     sfree(arr3);
+    sfree(arr2);
     return 0;
 
 }

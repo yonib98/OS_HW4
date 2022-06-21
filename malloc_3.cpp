@@ -1,5 +1,7 @@
 #include <unistd.h>
 #include <cstring>
+#include <iostream>
+#include <math.h>
 struct MallocMetadata
 {
     size_t size;
@@ -7,42 +9,54 @@ struct MallocMetadata
     MallocMetadata *next;
     MallocMetadata *prev;
 };
+
 MallocMetadata dummy={0, false, nullptr, nullptr};
-class SortedList{
-    MallocMetadata* head;
-    public:
-    SortedList(): head(&dummy){};
-    void insert(MallocMetadata* to_update){
-    while (head->next != nullptr && head->next->size <= to_update->size)
-    {  
-        if(head->next->size==to_update->size && head->next-to_update>0){
-            break;
-        }
-        head = head->next;
-    }
-    if (head->next != nullptr)
-    {
-        head->next->prev = to_update;
-    }
-    to_update->next = head->next;
-    head->next = to_update;
-    to_update->prev = head;
-
-
-    }
-    void remove(MallocMetadata* to_remove){
-    // remove from freeList
-            to_remove->prev->next = to_remove->next;
-            to_remove->next = nullptr;
-            to_remove->prev = nullptr;
-    }
-    friend void* smalloc(size_t size);
-};
 int num_of_allocs = 0;
 int num_of_free_blocks = 0;
 int num_of_free_bytes = 0;
 int num_of_total_allocated_bytes = 0;
 int num_of_meta_data_bytes = 0;
+class SortedList{
+    MallocMetadata* head;
+    public:
+    SortedList(): head(&dummy){};
+    void insert(MallocMetadata* to_update){
+    MallocMetadata* temp=head;
+    while (temp->next != nullptr && temp->next->size <= to_update->size)
+    {  
+        if(temp->next->size==to_update->size && temp->next-to_update>0){
+            break;
+        }
+        temp = temp->next;
+    }
+    if (temp->next != nullptr)
+    {
+        temp->next->prev = to_update;
+    }
+    to_update->next = temp->next;
+    temp->next = to_update;
+    to_update->prev = temp;
+
+    num_of_free_blocks++;
+    num_of_free_bytes += to_update->size;
+    }
+    void remove(MallocMetadata* to_remove){
+    // remove from freeList
+            
+            to_remove->prev->next = to_remove->next;
+            if(to_remove->next!=nullptr){
+                to_remove->next->prev=to_remove->prev;
+            }
+            to_remove->next = nullptr;
+            to_remove->prev = nullptr;
+
+            num_of_free_blocks--;
+            num_of_free_bytes -= to_remove->size;
+    }
+    friend void* smalloc(size_t size);
+    friend MallocMetadata* _merge(MallocMetadata* to_update);
+};
+
 SortedList freeList = SortedList();
 
 void* _split(void* freeBlock,size_t size){
@@ -53,7 +67,7 @@ void* _split(void* freeBlock,size_t size){
     freeList.insert(to_update);
     
     // update stats as usual;
-    num_of_free_bytes -= size+sizeof(MallocMetadata);
+    
     
     ((MallocMetadata*)freeBlock)->size=size;
     ((MallocMetadata*)freeBlock)->is_free=false;
@@ -64,6 +78,10 @@ void* _split(void* freeBlock,size_t size){
 
 void *smalloc(size_t size)
 {
+    double temp_num=size/8;
+    size=ceil(temp_num)*8;
+    MallocMetadata* wilderness_block = (MallocMetadata*)sbrk(0);
+    std::cout<<"sbrk "<< sbrk(0)<< std::endl;
     if (size == 0 || size > 1e8)
     {
         return nullptr;
@@ -73,21 +91,33 @@ void *smalloc(size_t size)
     while (to_find != nullptr)
     {
         if (size <= to_find->size)
-        {
+        {   
             int extraSpace = to_find->size-size-sizeof(MallocMetadata);
              if(extraSpace >128 && extraSpace < 1e8 ){
                 return _split(to_find,size);
             }
             freeList.remove(to_find);
             // need to add all the global stats
-            num_of_free_blocks--;
-            num_of_free_bytes -= to_find->size;
+
             to_find->is_free=false;
             return to_find + 1;
         }
         temp = to_find;
         to_find = to_find->next;
     }
+    
+    if(wilderness_block->is_free==true){
+        freeList.remove(wilderness_block);
+        int original_size=wilderness_block->size;
+        sbrk(size-original_size);
+        wilderness_block->size=size;
+        wilderness_block->is_free=false;
+
+        //expand the wilderness_block
+        //should we increase the num_of_allocs in this case????????????PIAZAAAAAAAAAAA
+        num_of_total_allocated_bytes+=size-original_size;
+        return wilderness_block;
+    } 
     void *allocation = sbrk(sizeof(MallocMetadata) + size);
     if (*(int *)allocation == -1)
     {
@@ -105,6 +135,42 @@ void *smalloc(size_t size)
     // update stats as usual
 }
 
+MallocMetadata* _merge(MallocMetadata* to_update){
+    MallocMetadata* left_merge=nullptr, *right_merge=nullptr;
+    MallocMetadata* head = freeList.head;
+    while(head!=nullptr){
+        if((void*)head+sizeof(MallocMetadata)+head->size==to_update){
+                left_merge=head;
+        }
+        if((void*)to_update+sizeof(MallocMetadata)+to_update->size==head){
+            right_merge=head;
+        }
+        head=head->next;
+    }
+
+    if(left_merge && right_merge){
+        int new_size = left_merge->size + right_merge->size+to_update->size + 2*sizeof(MallocMetadata);
+        freeList.remove(left_merge);
+        freeList.remove(right_merge);
+        left_merge->size=new_size;
+        return left_merge;
+    }
+    else if (left_merge){
+        int new_size = left_merge->size + to_update->size + sizeof(MallocMetadata);
+        freeList.remove(left_merge);
+         left_merge->size=new_size;
+        return left_merge;
+    }
+    else if (right_merge){
+        int new_size = right_merge->size + to_update->size + sizeof(MallocMetadata);
+        freeList.remove(right_merge);
+        to_update->size=new_size;
+        return to_update;
+    }
+    else{
+        return to_update;
+    }
+}
 void sfree(void *p)
 {
     if (p == nullptr)
@@ -116,12 +182,12 @@ void sfree(void *p)
     {
         return;
     }
+    to_update = _merge(to_update);
     to_update->is_free = true;
     freeList.insert(to_update);
 
     // update stats as usual;
-    num_of_free_blocks++;
-    num_of_free_bytes += to_update->size;
+
 }
 
 void *scalloc(size_t num, size_t size)
