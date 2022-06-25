@@ -124,6 +124,8 @@ public:
         to_insert->next = tmp;
         if(from->next!=nullptr){
             from->next->prev=to_insert;
+        }else{
+            last=to_insert;
         }
         from->next = to_insert;
         num_of_allocs++;
@@ -137,10 +139,12 @@ List allocates_List =List();
 mmap_List mmap_list = mmap_List();
 
 void* _split(void* freeBlock,size_t size){
-    MallocMetadata* to_update = (MallocMetadata*)((char*)freeBlock+size);
+    MallocMetadata* to_update = (MallocMetadata*)((char*)freeBlock+size+sizeof(MallocMetadata));
     to_update->is_free=true;
     to_update->size = ((MallocMetadata*)freeBlock)->size - size-sizeof(MallocMetadata);
+    if(((MallocMetadata*)freeBlock)->is_free){
     allocates_List.removeFree((MallocMetadata*)freeBlock);
+    }
     allocates_List.insertFree(to_update);
     // update stats as usual;
     allocates_List.insertFrom((MallocMetadata*)to_update,(MallocMetadata*)freeBlock);
@@ -329,7 +333,10 @@ void *srealloc(void *oldp, size_t size)
     MallocMetadata *to_update = (MallocMetadata *)oldp - 1;
     int bytes_to_copy = to_update->size;
     if (to_update->size >= size)
-    {
+    {    int extraSpace =to_update->size-size-sizeof(MallocMetadata);
+            if(extraSpace >=128 ){
+                return _split(to_update,size);
+            }
         return oldp;
     }
     //case b- lower address neighbor
@@ -338,27 +345,33 @@ void *srealloc(void *oldp, size_t size)
     if(left_neighbor && left_neighbor->is_free){
         if(left_neighbor->size+to_update->size+sizeof(MallocMetadata)>=size){
             //Merge left with to_update
+            allocates_List.removeFree(left_neighbor);
             int orig_size = left_neighbor->size;
             left_neighbor->size = to_update->size + left_neighbor->size + sizeof(MallocMetadata);
             left_neighbor->is_free = false;
             allocates_List.remove(to_update);
-            allocates_List.removeFree(left_neighbor);
             allocation = (MallocMetadata *) left_neighbor + 1;
             num_of_total_allocated_bytes+=left_neighbor->size-orig_size;
+            if(left_neighbor->size-size>=128){
+            allocation = (MallocMetadata*)(_split(left_neighbor,size))+1;
+            }
+            memmove(allocation, oldp, bytes_to_copy);
+            return allocation;
         }
        else if(to_update->next==nullptr){
             //Merge left with to_update
             //enlarge(if needed) after merge(sbrk)
+            allocates_List.removeFree(left_neighbor);
             int orig_size=left_neighbor->size;
             left_neighbor->size = to_update->size + left_neighbor->size + sizeof(MallocMetadata);
             left_neighbor->is_free = false;
             allocates_List.remove(to_update);
-            allocates_List.removeFree(left_neighbor);
             sbrk(size-left_neighbor->size);
             left_neighbor->size=size;
             allocation = (MallocMetadata *) left_neighbor + 1;
             num_of_total_allocated_bytes+=left_neighbor->size-orig_size;
-
+            memmove(allocation, oldp, bytes_to_copy);
+            return allocation;
         }
     }
     if(to_update->next==nullptr){
@@ -368,9 +381,10 @@ void *srealloc(void *oldp, size_t size)
         to_update->size=size;
         allocation = (MallocMetadata *) to_update + 1;
         num_of_total_allocated_bytes+=to_update->size-orig_size;
-
+        memmove(allocation, oldp, bytes_to_copy);
+        return allocation;
     }
-    if(right_neighbor && right_neighbor->is_free){
+     if(right_neighbor && right_neighbor->is_free){
         if(right_neighbor->size+to_update->size+sizeof(MallocMetadata)>=size){
             //Merge with right neighbor
             int orig_size = right_neighbor->size;
@@ -380,6 +394,11 @@ void *srealloc(void *oldp, size_t size)
             allocates_List.remove(right_neighbor);
             allocation = (MallocMetadata *) to_update + 1;
             num_of_total_allocated_bytes+=to_update->size-orig_size;
+            if(to_update->size-size>=128){
+            allocation = (MallocMetadata*)(_split(to_update,size))+1;
+            }
+            memmove(allocation, oldp, bytes_to_copy);
+            return allocation;
 
         }
     }
@@ -387,40 +406,45 @@ void *srealloc(void *oldp, size_t size)
         if(left_neighbor->size+right_neighbor->size+to_update->size+2*sizeof(MallocMetadata)>=size){
             //Merge all 3
             int orig_size = left_neighbor->size;
+            allocates_List.removeFree(left_neighbor);
 
             left_neighbor->size = to_update->size + left_neighbor->size + right_neighbor->size+ 2*sizeof(MallocMetadata);
             left_neighbor->is_free = false;
             right_neighbor->is_free=false;
             allocates_List.remove(to_update);
-            allocates_List.removeFree(left_neighbor);
             allocates_List.removeFree(right_neighbor);
             allocates_List.remove(right_neighbor);
             allocation = (MallocMetadata *) left_neighbor + 1;
             num_of_total_allocated_bytes+=left_neighbor->size-orig_size;
+            memmove(allocation, oldp, bytes_to_copy);
+            return allocation;
 
         }
         else if(right_neighbor->next==nullptr){
             //Merge all 3
             //Enlarge wilderness
             int orig_size = left_neighbor->size;
+            allocates_List.removeFree(left_neighbor);
+
             left_neighbor->size = to_update->size + left_neighbor->size + right_neighbor->size+ 2*sizeof(MallocMetadata);
             left_neighbor->is_free = false;
             right_neighbor->is_free=false;
             allocates_List.remove(to_update);
-            allocates_List.removeFree(left_neighbor);
             allocates_List.removeFree(right_neighbor);
             allocates_List.remove(right_neighbor);
             sbrk(size-left_neighbor->size);
             left_neighbor->size=size;
             allocation = (MallocMetadata *) left_neighbor + 1;
             num_of_total_allocated_bytes+=left_neighbor->size-orig_size;
+             memmove(allocation, oldp, bytes_to_copy);
+            return allocation;
 
         }
     }
     if(right_neighbor && right_neighbor->is_free && right_neighbor->next==nullptr){
         //Merge with right
         //Enlarge
-        int orig_size = right_neighbor->size;
+        int orig_size = to_update->size;
         to_update->size = to_update->size + right_neighbor->size + sizeof(MallocMetadata);
         to_update->is_free = false;
         allocates_List.removeFree(right_neighbor);
@@ -429,6 +453,9 @@ void *srealloc(void *oldp, size_t size)
         to_update->size=size;
         allocation = (MallocMetadata *) to_update + 1;
         num_of_total_allocated_bytes+=to_update->size-orig_size;
+         memmove(allocation, oldp, bytes_to_copy);
+         return allocation;
+
     }
 
     else {
@@ -436,11 +463,11 @@ void *srealloc(void *oldp, size_t size)
         if (allocation == NULL) {
             return NULL;
         }
+        memmove(allocation, oldp, bytes_to_copy);
+        sfree(oldp);
+        return allocation;
     }
-    memmove(allocation, oldp, bytes_to_copy);
-    sfree(oldp);
 
-    return allocation;
 }
 size_t _num_free_blocks()
 {
