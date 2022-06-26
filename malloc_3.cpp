@@ -143,7 +143,7 @@ void* _split(void* freeBlock,size_t size){
     to_update->is_free=true;
     to_update->size = ((MallocMetadata*)freeBlock)->size - size-sizeof(MallocMetadata);
     if(((MallocMetadata*)freeBlock)->is_free){
-    allocates_List.removeFree((MallocMetadata*)freeBlock);
+        allocates_List.removeFree((MallocMetadata*)freeBlock);
     }
     allocates_List.insertFree(to_update);
     // update stats as usual;
@@ -164,7 +164,7 @@ void *smalloc(size_t size)
         return nullptr;
     }
     if(size%8!=0){
-    size=size+(8-size%8);
+        size=size+(8-size%8);
     }
     if(size>1024*128){
         void* allocation = mmap(nullptr, size+sizeof(MallocMetadata),PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE,-1,0);
@@ -262,16 +262,15 @@ MallocMetadata* _merge(MallocMetadata* to_update){
     else if (right_merge && right_merge->is_free){
         int new_size = right_merge->size + to_update->size + sizeof(MallocMetadata);
         allocates_List.removeFree(right_merge);
-        allocates_List.remove(to_update);
-        num_of_total_allocated_bytes+=new_size-right_merge->size;
+        allocates_List.remove(right_merge);
+        num_of_total_allocated_bytes+=new_size-to_update->size;
 
         to_update->size=new_size;
         return to_update;
     }
-    else{
         return to_update;
     }
-}
+
 void sfree(void *p)
 {
     if (p == nullptr)
@@ -291,9 +290,10 @@ void sfree(void *p)
         if(munmap(to_update,to_update->size+sizeof(MallocMetadata))<0){
             exit(1);
         }
-        
+
         return;
     }
+    MallocMetadata* tmp=to_update;
     to_update = _merge(to_update);
     to_update->is_free = true;
     allocates_List.insertFree(to_update);
@@ -334,9 +334,14 @@ void *srealloc(void *oldp, size_t size)
     int bytes_to_copy = to_update->size;
     if (to_update->size >= size)
     {    int extraSpace =to_update->size-size-sizeof(MallocMetadata);
-            if(extraSpace >=128 ){
-                return _split(to_update,size);
-            }
+        if(extraSpace >=128 ){
+            allocation = (MallocMetadata*)_split(to_update,size);
+            allocates_List.removeFree(((MallocMetadata*)allocation)->next);
+            to_update= _merge(((MallocMetadata*)allocation)->next);
+            allocates_List.insertFree(to_update);
+            return (MallocMetadata*)allocation+1;
+
+        }
         return oldp;
     }
     //case b- lower address neighbor
@@ -353,12 +358,17 @@ void *srealloc(void *oldp, size_t size)
             allocation = (MallocMetadata *) left_neighbor + 1;
             num_of_total_allocated_bytes+=left_neighbor->size-orig_size;
             if(left_neighbor->size-size>=128){
-            allocation = (MallocMetadata*)(_split(left_neighbor,size))+1;
+                allocation = (MallocMetadata*)(_split(left_neighbor,size));
+                allocates_List.removeFree(((MallocMetadata*)allocation)->next);
+                to_update= _merge(((MallocMetadata*)allocation)->next);
+                allocates_List.insertFree(to_update);
+                return (MallocMetadata*)allocation+1;
+
             }
             memmove(allocation, oldp, bytes_to_copy);
             return allocation;
         }
-       else if(to_update->next==nullptr){
+        else if(to_update->next==nullptr){
             //Merge left with to_update
             //enlarge(if needed) after merge(sbrk)
             allocates_List.removeFree(left_neighbor);
@@ -384,7 +394,7 @@ void *srealloc(void *oldp, size_t size)
         memmove(allocation, oldp, bytes_to_copy);
         return allocation;
     }
-     if(right_neighbor && right_neighbor->is_free){
+    if(right_neighbor && right_neighbor->is_free){
         if(right_neighbor->size+to_update->size+sizeof(MallocMetadata)>=size){
             //Merge with right neighbor
             int orig_size = right_neighbor->size;
@@ -395,7 +405,11 @@ void *srealloc(void *oldp, size_t size)
             allocation = (MallocMetadata *) to_update + 1;
             num_of_total_allocated_bytes+=to_update->size-orig_size;
             if(to_update->size-size>=128){
-            allocation = (MallocMetadata*)(_split(to_update,size))+1;
+                allocation = (MallocMetadata*)(_split(to_update,size));
+                allocates_List.removeFree(((MallocMetadata*)allocation)->next);
+                to_update= _merge(((MallocMetadata*)allocation)->next);
+                allocates_List.insertFree(to_update);
+                return (MallocMetadata*)allocation+1;
             }
             memmove(allocation, oldp, bytes_to_copy);
             return allocation;
@@ -416,6 +430,13 @@ void *srealloc(void *oldp, size_t size)
             allocates_List.remove(right_neighbor);
             allocation = (MallocMetadata *) left_neighbor + 1;
             num_of_total_allocated_bytes+=left_neighbor->size-orig_size;
+            if(left_neighbor->size-size>=128){
+                allocation = (MallocMetadata*)(_split(left_neighbor,size));
+                allocates_List.removeFree(((MallocMetadata*)allocation)->next);
+                to_update= _merge(((MallocMetadata*)allocation)->next);
+                allocates_List.insertFree(to_update);
+                return (MallocMetadata*)allocation+1;
+            }
             memmove(allocation, oldp, bytes_to_copy);
             return allocation;
 
@@ -436,7 +457,7 @@ void *srealloc(void *oldp, size_t size)
             left_neighbor->size=size;
             allocation = (MallocMetadata *) left_neighbor + 1;
             num_of_total_allocated_bytes+=left_neighbor->size-orig_size;
-             memmove(allocation, oldp, bytes_to_copy);
+            memmove(allocation, oldp, bytes_to_copy);
             return allocation;
 
         }
@@ -453,8 +474,8 @@ void *srealloc(void *oldp, size_t size)
         to_update->size=size;
         allocation = (MallocMetadata *) to_update + 1;
         num_of_total_allocated_bytes+=to_update->size-orig_size;
-         memmove(allocation, oldp, bytes_to_copy);
-         return allocation;
+        memmove(allocation, oldp, bytes_to_copy);
+        return allocation;
 
     }
 
