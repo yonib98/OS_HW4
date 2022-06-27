@@ -22,13 +22,13 @@ int num_of_free_blocks = 0;
 int num_of_free_bytes = 0;
 int num_of_total_allocated_bytes = 0;
 int num_of_meta_data_bytes = 0;
+bool start_heap=true;
 class mmap_List{
     MallocMetadata* head;
     MallocMetadata* last;
 public:
     mmap_List(): head(&mmap_dummy),last(&mmap_dummy){};
     void insert(MallocMetadata* to_update){
-        MallocMetadata* temp=head;
         last->next = to_update;
         to_update->prev = last;
         to_update->next=nullptr;
@@ -74,7 +74,6 @@ public:
         num_of_free_bytes += to_update->size;
     }
     void insert(MallocMetadata* to_update){
-        MallocMetadata* temp=head;
         last->next = to_update;
         to_update->prev = last;
         to_update->next=nullptr;
@@ -152,13 +151,28 @@ void* _split(void* freeBlock,size_t size){
     int orig_size = ((MallocMetadata*)freeBlock)->size;
     ((MallocMetadata*)freeBlock)->size=size;
     ((MallocMetadata*)freeBlock)->is_free=false;
-    num_of_total_allocated_bytes-=orig_size-size;
+    num_of_total_allocated_bytes-=(orig_size-size);
     return freeBlock;
 
 }
 
 void *smalloc(size_t size)
-{
+{   
+    if(start_heap){
+    void* program_break = (void*)sbrk(0);
+
+    if(program_break==(void*)-1){
+        return nullptr;
+    }
+    unsigned long pb = (unsigned long)program_break;
+    if(pb%8!=0){
+        int to_add = 8 - ((pb)%8);
+        if(sbrk(to_add)==(void*)-1){
+            return nullptr;
+        }
+    }
+    start_heap=false;
+    }
     if (size == 0 || size > 1e8)
     {
         return nullptr;
@@ -166,7 +180,7 @@ void *smalloc(size_t size)
     if(size%8!=0){
         size=size+(8-size%8);
     }
-    if(size>1024*128){
+    if(size>=1024*128){
         void* allocation = mmap(nullptr, size+sizeof(MallocMetadata),PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE,-1,0);
         if(allocation==MAP_FAILED){
             perror("mmap");
@@ -189,14 +203,13 @@ void *smalloc(size_t size)
     //std::cout<<"sbrk "<< sbrk(0)<< std::endl;
 
     MallocMetadata *to_find = allocates_List.head;
-    MallocMetadata *temp = allocates_List.head;
     while (to_find != nullptr)
     {
         if (size <= to_find->size)
         {
             int extraSpace = to_find->size-size-sizeof(MallocMetadata);
             if(extraSpace >=128 ){
-                return _split(to_find,size);
+                return ((MallocMetadata*)_split(to_find,size))+1;
             }
             allocates_List.removeFree(to_find);
             // need to add all the global stats
@@ -204,14 +217,15 @@ void *smalloc(size_t size)
             to_find->is_free=false;
             return to_find + 1;
         }
-        temp = to_find;
         to_find = to_find->next_free;
     }
 
     if(wilderness_block->is_free==true){
         allocates_List.removeFree(wilderness_block);
         int original_size=wilderness_block->size;
-        sbrk(size-original_size);
+            if (sbrk(size-original_size)==(void*)-1){
+                 return nullptr;
+             }
         wilderness_block->size=size;
         wilderness_block->is_free=false;
 
@@ -221,7 +235,7 @@ void *smalloc(size_t size)
         return wilderness_block+1;
     }
     void *allocation = sbrk(sizeof(MallocMetadata) + size);
-    if (*(int *)allocation == -1)
+    if (allocation == (void*)-1)
     {
         return nullptr;
     }
@@ -239,7 +253,6 @@ void *smalloc(size_t size)
 
 MallocMetadata* _merge(MallocMetadata* to_update){
     MallocMetadata* left_merge=to_update->prev, *right_merge=to_update->next;
-    MallocMetadata* head = allocates_List.head;
 
     if(left_merge && left_merge->is_free &&  right_merge && right_merge->is_free){
         int new_size = left_merge->size + right_merge->size+to_update->size + 2*sizeof(MallocMetadata);
@@ -293,7 +306,6 @@ void sfree(void *p)
 
         return;
     }
-    MallocMetadata* tmp=to_update;
     to_update = _merge(to_update);
     to_update->is_free = true;
     allocates_List.insertFree(to_update);
@@ -329,8 +341,41 @@ void *srealloc(void *oldp, size_t size)
         return smalloc(size);
     }
     void* allocation=nullptr;
-    //case a.
     MallocMetadata *to_update = (MallocMetadata *)oldp - 1;
+    if(to_update->size>=1024*128){
+        //Mmap
+       if(to_update->size==size){
+           return oldp;
+        }
+        void* allocation = mmap(nullptr, size+sizeof(MallocMetadata),PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE,-1,0);
+         if(allocation==MAP_FAILED){
+            perror("mmap");
+            exit(1);
+        }
+        if(allocation==MAP_FAILED){
+            perror("mmap");
+            exit(1);
+        }
+        MallocMetadata *new_allocation = (MallocMetadata *)allocation;
+        new_allocation->size = size;
+        new_allocation->is_free = false;
+        new_allocation->next = nullptr;
+        new_allocation->prev = nullptr;
+        mmap_list.insert(new_allocation);
+        num_of_allocs++;
+        num_of_total_allocated_bytes+=size;
+        memmove(new_allocation+1,oldp,to_update->size);
+        mmap_list.remove(to_update);
+        num_of_allocs--;
+        num_of_total_allocated_bytes-=to_update->size;
+        if(munmap(to_update,to_update->size+sizeof(MallocMetadata))<0){
+            exit(1);
+        }   
+
+             //need to ask if when munmapping an area do we need to lower by 1 the num_of_allocs???
+        return (MallocMetadata *)allocation + 1;
+    }
+    //case a.oldp
     int bytes_to_copy = to_update->size;
     if (to_update->size >= size)
     {    int extraSpace =to_update->size-size-sizeof(MallocMetadata);
@@ -362,6 +407,7 @@ void *srealloc(void *oldp, size_t size)
                 allocates_List.removeFree(((MallocMetadata*)allocation)->next);
                 to_update= _merge(((MallocMetadata*)allocation)->next);
                 allocates_List.insertFree(to_update);
+                memmove((MallocMetadata*)allocation+1, oldp, bytes_to_copy);
                 return (MallocMetadata*)allocation+1;
 
             }
@@ -397,7 +443,7 @@ void *srealloc(void *oldp, size_t size)
     if(right_neighbor && right_neighbor->is_free){
         if(right_neighbor->size+to_update->size+sizeof(MallocMetadata)>=size){
             //Merge with right neighbor
-            int orig_size = right_neighbor->size;
+            int orig_size = to_update->size;
             to_update->size = to_update->size + right_neighbor->size + sizeof(MallocMetadata);
             to_update->is_free = false;
             allocates_List.removeFree(right_neighbor);
@@ -409,6 +455,7 @@ void *srealloc(void *oldp, size_t size)
                 allocates_List.removeFree(((MallocMetadata*)allocation)->next);
                 to_update= _merge(((MallocMetadata*)allocation)->next);
                 allocates_List.insertFree(to_update);
+                memmove((MallocMetadata*)allocation+1, oldp, bytes_to_copy);
                 return (MallocMetadata*)allocation+1;
             }
             memmove(allocation, oldp, bytes_to_copy);
@@ -435,6 +482,7 @@ void *srealloc(void *oldp, size_t size)
                 allocates_List.removeFree(((MallocMetadata*)allocation)->next);
                 to_update= _merge(((MallocMetadata*)allocation)->next);
                 allocates_List.insertFree(to_update);
+                memmove((MallocMetadata*)allocation+1, oldp, bytes_to_copy);
                 return (MallocMetadata*)allocation+1;
             }
             memmove(allocation, oldp, bytes_to_copy);

@@ -16,9 +16,11 @@ int num_of_meta_data_bytes=0;
 
 MallocMetadata dummy={0,false,nullptr,nullptr};
 MallocMetadata *head=&dummy;
-void* _split(void* freeBlock,size_t size){
-    MallocMetadata* allocation = (MallocMetadata*)(freeBlock+size);
+/*void* _split(void* freeBlock,size_t size){
+    MallocMetadata* allocation = (MallocMetadata*)((char*)freeBlock+size);
+    return all
 }
+*/
 void* smalloc(size_t size){
       if(size==0 || size> 1e8){
         return nullptr;
@@ -27,9 +29,9 @@ void* smalloc(size_t size){
     MallocMetadata* temp= head;
     while(to_find!=nullptr){
         if(to_find->is_free && size<=to_find->size){
-            if(to_find->size-size-sizeof(MallocMetadata)>128){
-                return _split(to_find,size);
-            }
+     //       if(to_find->size-size-sizeof(MallocMetadata)>128){
+       //         return _split(to_find,size);
+         //   }
             //no need to alloc new space
             to_find->is_free=false;
             //need to add all the global stats
